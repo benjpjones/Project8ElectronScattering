@@ -111,7 +111,7 @@ def SampleContinuum(T,Distn,Emin=1.0001,Emax=10,logKmin=-9,logKmax=6,samples=100
     draws=sample_2d_array(Distn,samples)
     E=draws[0]/bins*(Emax-Emin)+Emin
     logK=draws[1]/bins*(logKmax-logKmin)+logKmin
-    theta= np.arccos(kinematics.getCosTheta(np.exp(logK),T,E*constants.R))*180/np.pi
+    theta= np.arccos(kinematics.getCosTheta(np.exp(logK),T,E*constants.R))
     dT   = kinematics.getDeltaT(np.exp(logK),E*constants.R)
     return(theta,dT,E,logK)
 
