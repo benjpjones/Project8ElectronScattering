@@ -26,7 +26,7 @@ def GetNextCollision(T=20e3,Density=1e20):
     CollisionTypeName=np.array(list(ListOfXs.keys()))[CollisionType][0]
 
     # Make single diff sample functions for elastic and discrete
-    SampleDictInel=etcross.MakeSampleDicitonary(T,constants.movM,ns=range(2,8))
+    SampleDictInel=etcross.MakeSampleDicitonary(T,constants.movM,ns=range(2,10))
     SampleFuncEl=etcross.MakeSampleFunction_elastic(T,constants.movM)
 
     # Set up grid for sampling double diff continuum cross section
