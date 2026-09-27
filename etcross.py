@@ -22,13 +22,13 @@ def dsigdLnKa_discrete(T, n, lnKa2):
 
 
 # Make function to sample diff XS from
-def MakeSampleDicitonary(T, movM, ns=range(2, 10)):
+def MakeSampleDicitonary(T, M, ns=range(2, 10)):
     DiffXSSampleFunction = {}
 
     DiffXS_LogKa2 = {}
     for n in ns:
-        q2min = kinematics.Ka2Min(kinematics.En(n), T, constants.movM)
-        q2max = kinematics.Ka2Max(kinematics.En(n), T, constants.movM)
+        q2min = kinematics.Ka2Min(kinematics.En(n), T, M)
+        q2max = kinematics.Ka2Max(kinematics.En(n), T, M)
         logq2_limited = np.linspace(np.log(q2min), np.log(q2max), 100)
         DiffXS_LogKa2[n] = interp1d(logq2_limited, dsigdLnKa_discrete(T, n, logq2_limited))
 
@@ -66,25 +66,25 @@ def dfdEovR_ln_continuum(EovR, lnKa2):
 
 
 # Differential cross section integrated over Ka2 to continuum at E/R
-def dsigdEovR_continuum(T, EovR):
+def dsigdEovR_continuum(T, EovR,M=constants.mT):
     def ToInt(lnKa2):
         return (dfdEovR_ln_continuum(EovR, lnKa2))
 
-    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * R, T, constants.movM))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * R, T, constants.movM))
+    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * R, T, M))
+    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * R, T, M))
     return (constants.NormConst / ((T / constants.R) * (EovR)) * quad(ToInt, ln_Ka2_min, ln_Ka2_max)[0])
 
 
 # Differential cross section integrated over Ka2 to continuum at ln(E/R) -
 #  this one gives better convergence in the integral.
-def dsigdlnEovR_continuum(T, lnEovR):
+def dsigdlnEovR_continuum(T, lnEovR,M=constants.mT):
     EovR = np.exp(lnEovR)
 
     def ToInt(lnKa2):
         return (dfdEovR_ln_continuum(EovR, lnKa2))
 
-    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, constants.movM))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, constants.movM))
+    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
+    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
     return (constants.NormConst / (T / constants.R) * quad(ToInt, ln_Ka2_min, ln_Ka2_max)[0])
 
 
@@ -100,9 +100,9 @@ def sig_continuum(T):
 
 
 # Cross section between kinematic limits
-def DistributionDraw(EovR, lnKa2, T=20e3, movM=constants.movM):
-    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, constants.movM))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, constants.movM))
+def DistributionDraw(EovR, lnKa2, T=20e3, M=constants.mT):
+    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
+    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
     returnval = (lnKa2 > ln_Ka2_min) * (lnKa2 < ln_Ka2_max) * (EovR > 1.0) * (
                 constants.NormConst / (T / constants.R) * dfdEovR_ln_continuum(EovR, lnKa2) / (EovR))
     return returnval
@@ -132,10 +132,10 @@ def sig_elastic(T):
     TovR=T/constants.R
     return 4*np.pi*constants.BohrRad**2*(12+18*TovR+7*TovR**2)/(12*(1+TovR)**3)
 
-def MakeSampleFunction_elastic(T,movM):
+def MakeSampleFunction_elastic(T,M):
 
-    q2min=kinematics.Ka2Min(0,T,constants.movM)+1e-10
-    q2max=kinematics.Ka2Max(0,T,constants.movM)
+    q2min=kinematics.Ka2Min(0,T,M)+1e-10
+    q2max=kinematics.Ka2Max(0,T,M)
     logq2_limited=np.linspace(np.log(q2min),np.log(q2max),100)
     DiffXS_LogKa2=interp1d(logq2_limited,dsigdlnKshape_elastic(np.exp(logq2_limited)))
     vars=np.linspace(DiffXS_LogKa2.x[0],DiffXS_LogKa2.x[-1],1000)
@@ -185,3 +185,75 @@ def sample_2d_array(A, n_samples, extent=None, rng=None):
     y_samples = ymax - (row_j / nrows) * (ymax - ymin)
 
     return x_samples, y_samples
+
+
+
+#============================================
+# Make dictionaries to use for sampling codes
+#============================================
+
+def MakeTotalCrossSections(Ts=np.linspace(1e2,20e3,100)):
+
+    TotalCrossSections={}
+
+    #Discrete cross sections
+    for n in range(2,10):
+        sig=[]
+
+        for T in Ts:
+            ln_qmin2=np.log(kinematics.Ka2Min(kinematics.En(n),T,constants.mT))
+            ln_qmax2=np.log(kinematics.Ka2Max(kinematics.En(n),T,constants.mT))
+            def ToInt(lnKa2):
+                return dsigdLnKa_discrete(T,n,lnKa2)
+            sig.append(quad(ToInt,ln_qmin2,ln_qmax2)[0])
+        TotalCrossSections["discrete_"+str(n)]=interp1d(Ts,sig)
+
+    sigma_cont=[sig_continuum(T) for T in Ts]
+    TotalCrossSections["continuum"]=interp1d(Ts,sigma_cont)
+
+    TotalCrossSections["elastic"]=interp1d(Ts,sig_elastic(Ts))
+    return TotalCrossSections
+
+def MakeKinematicsFunctions():
+
+    KinematicsFunctions={}
+
+    # Set up grid for sampling double diff continuum cross section
+    #  It will sample from a 2D histogram with E/R between Emin and
+    #  Emax, logKa2min and logka2max, with dimensionality of bins
+    #  in each direction.  Use the example in TechNotePlots to make
+    #  sure this suitably spans the space where the cross section is
+    #  significant, if in doubt.
+    Emin = 1.00001;
+    Emax = 10;
+    logKa2min = -9;
+    logKa2max = 6;
+    bins = 100
+    EE, KK = np.meshgrid(np.linspace(Emin, Emax, bins), np.linspace(logKa2min, logKa2max, bins))
+
+    def ElasticSample(T):
+        SampleFuncEl = MakeSampleFunction_elastic(T, constants.mT)
+        Ka2 = GetRandomKa2_elastic(SampleFuncEl, 1)[0]
+        dT = kinematics.getDeltaT(Ka2, 0)
+        Theta = np.arccos(kinematics.getCosTheta(Ka2, T, 0))
+        return (dT, Theta)
+    KinematicsFunctions["elastic"]=ElasticSample
+
+    def ContinuumSample(T):
+        Distn_continuum = DistributionDraw(EE, KK, T, constants.mT)
+        Theta, dT, E, logK = SampleContinuum(T, Distn_continuum, Emin, Emax, logKa2min, logKa2max, samples=1)
+        Theta = Theta[0]
+        dT = dT[0]
+        return(dT,Theta)
+    KinematicsFunctions["continuum"]=ContinuumSample
+
+    def DiscreteSample(T,n):
+        SampleDictInel = MakeSampleDicitonary(T, constants.mT, ns=range(2, 10))
+        dE = kinematics.En(n)
+        Ka2 = GetRandomKa2_discrete(n, SampleDictInel, 1)[0]
+        dT = kinematics.getDeltaT(Ka2, dE)
+        Theta = np.arccos(kinematics.getCosTheta(Ka2, T, dE))
+        return(dT,Theta)
+    KinematicsFunctions["discrete"]=DiscreteSample
+
+    return KinematicsFunctions
