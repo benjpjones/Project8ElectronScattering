@@ -91,13 +91,13 @@ def dsigdlnEovR_continuum(T, lnEovR,M=constants.mT):
 
 # Total cross section into the continuum, integrated over E/R
 def sig_continuum(T):
-    EovR_min = np.log(1.00001)
-    EovR_max = np.log(T / constants.R - 1)
+    lnEovR_min = np.log(1.00001)
+    lnEovR_max = np.log(T / constants.R - 1)
 
     def ToInt(EovR):
         return (dsigdlnEovR_continuum(T, EovR))
 
-    return (quad(ToInt, EovR_min, EovR_max)[0])
+    return (quad(ToInt, lnEovR_min, lnEovR_max)[0])
 
 
 # Cross section between kinematic limits
