@@ -25,7 +25,7 @@ def SampleKinematics(T, OscStrengthFunction, M, rng=None):
     lnEovR_min = np.log(min(OscStrengthFunction.x)/constants.R)
     lnEovR_max = np.log(max(OscStrengthFunction.x)/constants.R)
     lnErange=np.linspace(lnEovR_min,lnEovR_max,1000)
-    SampleFunction=interp1d(np.cumsum(OscStrengthFunction(np.exp(lnErange)*constants.R))/sum(OscStrengthFunction(np.exp(lnErange)*constants.R)),lnErange)
+    SampleFunction=interp1d(np.cumsum(OscStrengthFunction(np.exp(lnErange)*constants.R))/sum(OscStrengthFunction(np.exp(lnErange)*constants.R)),lnErange,bounds_error=False,fill_value=0)
 
     lnEovR_sample=SampleFunction(rng.random())
     EovR=np.exp(lnEovR_sample)
