@@ -62,7 +62,6 @@ def GetNextCollision(CrossSections,KinFunctions,T=20e3,Density=1e20,rng=None):
 
     SplitName=CollisionTypeName.split("_")
     if(len(SplitName)==2):
-        print(SplitName[0],SplitName[-1])
         dT, Theta = KinFunctions[SplitName[0]](T,int(SplitName[-1]))
     else:
         dT, Theta = KinFunctions[SplitName[0]](T)

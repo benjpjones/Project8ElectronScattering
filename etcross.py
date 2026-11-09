@@ -71,8 +71,8 @@ def dsigdEovR_continuum(T, EovR,M=constants.mT):
     def ToInt(lnKa2):
         return (dfdEovR_ln_continuum(EovR, lnKa2))
 
-    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * R, T, M))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * R, T, M))
+    ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
+    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
     return (constants.NormConst / ((T / constants.R) * (EovR)) * quad(ToInt, ln_Ka2_min, ln_Ka2_max)[0])
 
 
@@ -222,3 +222,22 @@ def MakeKinematicsFunctions():
     KinematicsFunctions["discrete"]=DiscreteSample
 
     return KinematicsFunctions
+
+# Just for comparison purposes, heres how angular dist would go
+#   under optical approximation.
+#
+def DiscreteSampleOpticalApprox(T,n,rng=None):
+    rng = rng or np.random.default_rng()
+
+    dE = kinematics.En(n)
+
+    ln_Ka2_min = np.log(kinematics.Ka2Min(dE, T, constants.mT))
+    ln_Ka2_max = 0
+
+    ln_ka2_sample = rng.random() * (ln_Ka2_max - ln_Ka2_min) + ln_Ka2_min
+    Ka2 = np.exp(ln_ka2_sample)
+
+    dT = kinematics.getDeltaT(Ka2, dE)
+    Theta = np.arccos(kinematics.getCosTheta(Ka2, T, dE))
+    return(dT,Theta)
+

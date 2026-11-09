@@ -9,7 +9,7 @@ def dsigdlnEovR_oscstrength(T, lnEovR,OscStrengthFunction,M=constants.mT*2):
     ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
     ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
 
-    return (constants.NormConst / (T / constants.R) *OscStrengthFunction(EovR*constants.R) * (ln_Ka2_max-ln_Ka2_min))
+    return (constants.NormConst / (T / constants.R) * OscStrengthFunction(EovR*constants.R) * (ln_Ka2_max-ln_Ka2_min))
 
 def sig_oscstrength(T,OscStrengthFunction,M=constants.mT*2):
     lnEovR_min = np.log(min(OscStrengthFunction.x)/constants.R)
@@ -31,8 +31,8 @@ def SampleKinematics(T, OscStrengthFunction, M, rng=None):
     EovR=np.exp(lnEovR_sample)
 
     ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
-
+    #ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
+    ln_Ka2_max=0
     ln_ka2_sample=rng.random()*(ln_Ka2_max-ln_Ka2_min)+ln_Ka2_min
     Ka2=np.exp(ln_ka2_sample)
 

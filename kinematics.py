@@ -31,3 +31,10 @@ def getCosTheta(Ka2,T,E,M=constants.mT):
     denominator=np.sqrt(1-movM*E/T)
     return numerator/denominator
 
+# Get the Ka2 from a CosTheta
+def GetKa2FromCosTheta(CosTh, T, E, M=constants.mT):
+    movM = (constants.me + M) / M
+    term1=2*(T/constants.R)*movM**-2
+    term2=(1-0.5*movM*E/T)-(1-movM*E/T)**0.5*CosTh
+    return term1*term2
+
