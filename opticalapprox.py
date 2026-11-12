@@ -7,9 +7,10 @@ from scipy.interpolate import interp1d
 def dsigdlnEovR_oscstrength(T, lnEovR,OscStrengthFunction,M=constants.mT*2):
     EovR=np.exp(lnEovR)
     ln_Ka2_min = np.log(kinematics.Ka2Min(EovR * constants.R, T, M))
-    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
+#    ln_Ka2_max = np.log(kinematics.Ka2Max(EovR * constants.R, T, M))
+    ln_Ka2_max=0
 
-    return (constants.NormConst / (T / constants.R) * OscStrengthFunction(EovR*constants.R) * (ln_Ka2_max-ln_Ka2_min))
+    return (constants.NormConst *constants.R / (T / constants.R) * OscStrengthFunction(EovR*constants.R) * (ln_Ka2_max-ln_Ka2_min))
 
 def sig_oscstrength(T,OscStrengthFunction,M=constants.mT*2):
     lnEovR_min = np.log(min(OscStrengthFunction.x)/constants.R)

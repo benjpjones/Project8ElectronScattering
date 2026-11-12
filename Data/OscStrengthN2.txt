@@ -1,8 +1,8 @@
 LXCat, www.lxcat.net
-Generated on 28 Sep 2026. All rights reserved.
+Generated on 12 Nov 2026. All rights reserved.
 
 RECOMMENDED REFERENCE FORMAT
-- UBC database, www.lxcat.net, retrieved on September 28, 2026.
+- UBC database, www.lxcat.net, retrieved on November 12, 2026.
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 DATABASE:         UBC database
@@ -1075,7 +1075,7 @@ COLUMNS: Energy (eV) | Oscillator strength (eV-1)
  2.255159e+1	2.319700e-1
  2.256194e+1	2.279530e-1
  2.257229e+1	2.337410e-1
- 2.250000e+1	2.246570e-1
+ 2.258264e+1	2.392740e-1
  2.300000e+1	2.304910e-1
  2.350000e+1	2.352070e-1
  2.400000e+1	2.264020e-1
