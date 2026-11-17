@@ -23,12 +23,12 @@ lnKa2Max=np.log(max(gosd_simple.K**2))
 # This constructs an interpolator that also extrapolates linearly to (slightly below) the ionization threshold
 ExtrapTo=15/constants.Hartree
 
-MinE=sorted(gosd_simple.E.unique())[0]
-SecE=sorted(gosd_simple.E.unique())[1]
+MinE=sorted(gosd_ex.E.unique())[0]
+SecE=sorted(gosd_ex.E.unique())[1]
 
-GOSD_MinE=np.array(gosd_simple[gosd_simple.E==MinE].GOSD)
-GOSD_SecE=np.array(gosd_simple[gosd_simple.E==SecE].GOSD)
-Ks=gosd_simple[gosd_simple.E==MinE].K
+GOSD_MinE=np.array(gosd_ex[gosd_ex.E==MinE].GOSD)
+GOSD_SecE=np.array(gosd_ex[gosd_ex.E==SecE].GOSD)
+Ks=gosd_ex[gosd_ex.E==MinE].K
 Extrap_GOSD=GOSD_MinE+(GOSD_MinE-GOSD_SecE)*(MinE-ExtrapTo)/(SecE-MinE)
 for i in range(len(Ks)):
     gosd_ex.loc["New"+str(i)]=([Ks.iloc[i],ExtrapTo,Extrap_GOSD[i]])
