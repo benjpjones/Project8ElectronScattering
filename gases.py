@@ -1,9 +1,7 @@
 import opticalapprox
 import constants
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-
+import elastic
 
 A0_CM = 5.29177210903e-9
 
@@ -17,6 +15,7 @@ Masses= {"H2":2*constants.mH,
          "Li":6*constants.mH,
          "N2":28*constants.mH,
          "O2":32*constants.mH,
+         "Ar":40*constants.mH,
          "Kr":83*constants.mH}
 
 M2s={"H2":1.5487,
@@ -24,24 +23,30 @@ M2s={"H2":1.5487,
      "O2":4.652,
      "N2":4.742,
      "Li":6.037,
-     "Kr":7.88}
+     "Kr":7.88,
+     "Ar":4.268}
 
 Cs={"H2":2.4036,
      "He":C_from_Mlnc(0.7525, -0.3800),
      "O2":4.9969,
      "N2":4.8612,
      "Li":C_from_Mlnc(6.037, 12.71),
-     "Kr":C_from_Mlnc(7.34, -2.62)}
+     "Kr":C_from_Mlnc(7.34, -2.62),
+     "Ar":C_from_Mlnc(4.268, -1.74)}
 
 Colors={"H2":'DarkRed',
         "He":'DarkOrange',
         "Li":'dimgrey',
         "N2":'DarkBlue',
         "O2":'DarkGreen',
-        "Kr":'purple'}
+        "Kr":'purple',
+        "Ar":'DarkCyan'}
+
+
 
 #Nb: still need oscillator strengths for Li
-allgases=['H2','He','N2','O2','Kr']
+allgases=['H2','He','N2','O2','Kr','Ar']
+
 
 def GetInelasticCrossSection(gas):
     return opticalapprox.GetBetheBornCrossSectionFunction(M2s[gas],Cs[gas])
@@ -49,3 +54,8 @@ def GetInelasticCrossSection(gas):
 def GetKinematicFunctionInelastic(gas):
     return opticalapprox.GetKinematicFunction("./Data/OscillatorStrengths/OscStrength"+gas+".txt",Masses[gas])
 
+def GetEleasticCrossSection(gas):
+    return elastic.ElasticTotalXS[gas]
+
+def GetKinematicFunctionElastic(gas):
+    return elastic.GetElasticKinematicFunction("./Data/Elastic/AngleTables/"+gas+"_DCS_1-20keV.csv",)
