@@ -34,10 +34,12 @@ for i in range(len(Ks)):
     gosd_ex.loc["New"+str(i)]=([Ks.iloc[i],ExtrapTo,Extrap_GOSD[i]])
 
 Points_ex     = np.array([gosd_ex.E,gosd_ex.K]).T
+Points_ex_ln  = np.array([np.log(gosd_ex.E*constants.Hartree/constants.R),np.log(gosd_ex.K**2)]).T
 df_dE_ex      = LinearNDInterpolator(Points_ex,gosd_ex.GOSD)
 
-Points_simple = np.array([gosd_simple.E, gosd_simple.K]).T
-df_dE_simple  = LinearNDInterpolator(Points_simple, gosd_simple.GOSD)
+Points_simple    = np.array([gosd_simple.E, gosd_simple.K]).T
+Points_simple_ln = np.array([np.log(gosd_simple.E*constants.Hartree/constants.R), np.log(gosd_simple.K**2)]).T
+df_dE_simple     = LinearNDInterpolator(Points_simple, gosd_simple.GOSD)
 
 
 def dsig_dlnEovR_dlnKa2(T,lnEovR,lnKa2,interpr):
